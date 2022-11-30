@@ -23,7 +23,7 @@ app.use('/shoppingcarts', shoppingCartsRouter);
 
 mongoose.connect(process.env.MONGODB_CONNECTION_STRING)
 	.then(() => {
-		app.listen(5555, () => {
+		app.listen(process.env.PORT, () => {
 			console.log('Servidor rodando na porta: http://localhost:5555/');
 		});
 	})
