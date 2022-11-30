@@ -3,9 +3,11 @@ import { ProductType } from '../@types/product';
 
 const ProductSchema = new mongoose.Schema({
 	name: String,
-	price: Number,
 	description: String,
-	imageUrl: String,
+	price: Number,
+	image_url: String,
+	avaliation_points: Number,
+	avaliation_count: Number,
 });
 
 const ProductModel = mongoose.model('product', ProductSchema);

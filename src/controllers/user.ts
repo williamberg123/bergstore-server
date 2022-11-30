@@ -89,6 +89,19 @@ export const Authenticate = async (req: Request, res: Response) => {
 export const DeleteUser = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.body;
+		const token = req.headers['x-acess-token'];
+
+		const jwtDecoded = jwt.decode(token as string, {
+			complete: false,
+			json: true,
+		});
+
+		if (id !== jwtDecoded?.id) {
+			return res.status(401).send({
+				message: 'user not authorized',
+			});
+		}
+
 		const user = await User.findUserByKey('_id', id);
 
 		if (!user) {
