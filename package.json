@@ -1,9 +1,10 @@
 {
 	"name": "server",
 	"version": "0.0.0",
+	"main": "index.js",
 	"private": true,
 	"scripts": {
-		"dev": "tsx watch ./src/server.ts"
+		"start": "node ./src/server.ts"
 	},
 	"dependencies": {
 		"@babel/cli": "^7.19.3",
