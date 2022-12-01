@@ -9,9 +9,7 @@ export const AddProductToShoppingCart = async (req: Request, res: Response) => {
 
 		const { products } = await ShoppingCart.findShoppingCart(shoppingCartId);
 
-		const isAlready = products.includes({
-			id: productId,
-		});
+		const isAlready = products.find(({ id }: { id: string }) => id === productId);
 
 		if (isAlready) {
 			return res.status(409).send({
@@ -38,17 +36,18 @@ export const ListShoppingCartProducts = async (req: Request, res: Response) => {
 		const { id } = req.params;
 
 		const { products } = await ShoppingCart.findShoppingCart(id);
-		console.log(products);
 
 		if (!products.length) {
-			return res.status(409).send({
-				message: 'no products in this shopping cart',
+			return res.status(200).json({
+				products: [],
 			});
 		}
 
-		const productsInfo = await Promise.all([
+		let productsInfo = await Promise.all([
 			...products.map((product: { id: string }) => Product.findProductById(product.id)),
 		]);
+
+		productsInfo = productsInfo.map((p, index) => ({ ...p._doc, count: products[index].count }));
 
 		return res.status(200).json({
 			products: productsInfo,

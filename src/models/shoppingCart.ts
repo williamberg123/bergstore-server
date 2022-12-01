@@ -19,9 +19,9 @@ export const createShoppingCart = async (): Promise<Document | null | undefined>
 	}
 };
 
-export const findShoppingCart = async (id: string): Promise<Document | null | undefined> => {
+export const findShoppingCart = async (id: string): Promise<Document<string, any, ShoppingCartType> | null | undefined> => {
 	try {
-		const response = await ShoppingCartModel.findById(id);
+		const response: Document<string, any, ShoppingCartType> | null = await ShoppingCartModel.findById(id);
 
 		return response;
 	} catch (error) {
@@ -44,8 +44,11 @@ export const addProductToShoppingCart = async (
 	product: { id: string, count: number },
 ): Promise<ShoppingCartType | null | undefined> => {
 	try {
+		const { products } = await findShoppingCart(shoppingCartId);
+
 		const updatedShoppingCart: ShoppingCartType | null = await ShoppingCartModel.findByIdAndUpdate(shoppingCartId, {
 			products: [
+				...products,
 				product,
 			],
 		});
