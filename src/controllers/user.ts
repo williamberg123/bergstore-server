@@ -14,9 +14,9 @@ export const NewUser = async (req: Request, res: Response) => {
 			});
 		}
 
-		const response = await User.findUserByKey('email', email);
+		const isAlready = await User.findUserByKey('email', email);
 
-		if (response) {
+		if (isAlready) {
 			return res.status(409).send({
 				message: 'this email is already in use',
 			});
@@ -40,7 +40,7 @@ export const NewUser = async (req: Request, res: Response) => {
 			});
 		}
 
-		const token = jwt.sign({ id: user._id }, process.env.SECRET, {
+		const token = jwt.sign({ id: updatedUser._id }, process.env.SECRET, {
 			expiresIn: 86400,
 		});
 
@@ -50,6 +50,10 @@ export const NewUser = async (req: Request, res: Response) => {
 		});
 	} catch (error) {
 		console.log(error);
+
+		return res.status(400).send({
+			message: 'unexpected error',
+		});
 	}
 };
 
@@ -83,6 +87,10 @@ export const Authenticate = async (req: Request, res: Response) => {
 		});
 	} catch (error) {
 		console.log(error);
+
+		return res.status(400).send({
+			message: 'unexpected error',
+		});
 	}
 };
 
@@ -102,17 +110,9 @@ export const DeleteUser = async (req: Request, res: Response) => {
 			});
 		}
 
-		const user = await User.findUserByKey('_id', id);
-
-		if (!user) {
-			return res.status(409).send({
-				message: 'user not found',
-			});
-		}
-
 		const deletedUser = await User.deleteUser(id);
 
-		if (!deletedUser?.shopping_cart_id) return res.status(400).send();
+		if (!deletedUser) return res.status(409).send({ message: 'user not found' });
 
 		const deletedShoppingCart = await ShoppingCart.deleteShoppingCart(deletedUser?.shopping_cart_id);
 
@@ -122,6 +122,9 @@ export const DeleteUser = async (req: Request, res: Response) => {
 		return res.status(400).send();
 	} catch (error) {
 		console.log(error);
-		return res.status(400).send();
+
+		return res.status(400).send({
+			message: 'unexpected error',
+		});
 	}
 };

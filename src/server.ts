@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 
 import usersRouter from './routes/user';
 import shoppingCartsRouter from './routes/shoppingCart';
+import productsRouter from './routes/product';
 
 dotenv.config();
 
@@ -20,8 +21,9 @@ app.use(cookieParser());
 
 app.use('/users', usersRouter);
 app.use('/shoppingcarts', shoppingCartsRouter);
+app.use('/products', productsRouter);
 
-mongoose.connect(process.env.MONGODB_CONNECTION_STRING)
+mongoose.connect(process.env.MONGODB_CONNECTION_STRING as string)
 	.then(() => {
 		app.listen(process.env.PORT, () => {
 			console.log('Servidor rodando na porta: http://localhost:5555/');

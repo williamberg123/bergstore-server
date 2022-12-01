@@ -41,7 +41,7 @@ export const deleteShoppingCart = async (id: string): Promise<Document | null | 
 
 export const addProductToShoppingCart = async (
 	shoppingCartId: string,
-	product: { id: string, count: number },
+	product: { product_id: string, count: number },
 ): Promise<ShoppingCartType | null | undefined> => {
 	try {
 		const { products } = await findShoppingCart(shoppingCartId);
@@ -51,6 +51,34 @@ export const addProductToShoppingCart = async (
 				...products,
 				product,
 			],
+		});
+
+		return updatedShoppingCart;
+	} catch (error) {
+		console.log(error);
+	}
+};
+
+export const updateShoppingCartProductAmount = async (
+	shoppingCartId: string,
+	productInfo: { product_id: string, amount: number },
+) => {
+	try {
+		const { product_id, amount } = productInfo;
+
+		const { products } = await findShoppingCart(shoppingCartId);
+
+		const updatedProducts = products.map((product: { product_id: string, count: number }) => {
+			return product.product_id === product_id
+				? {
+					...product,
+					count: product.count + amount,
+				}
+				: product;
+		});
+
+		const updatedShoppingCart = await ShoppingCartModel.findByIdAndUpdate(shoppingCartId, {
+			products: updatedProducts,
 		});
 
 		return updatedShoppingCart;

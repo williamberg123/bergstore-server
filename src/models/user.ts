@@ -67,9 +67,11 @@ export const deleteUser = async (userId: string): Promise<UserType | null | unde
 
 export const addShoppingCartId = async (userId: string, shoppingCartId: string): Promise<UserType | null | undefined> => {
 	try {
-		const updatedUser: UserType | null = await UserModel.findByIdAndUpdate(userId, {
+		let updatedUser: UserType | null = await UserModel.findByIdAndUpdate(userId, {
 			shopping_cart_id: shoppingCartId,
 		});
+
+		updatedUser = await UserModel.findById(userId);
 
 		return updatedUser;
 	} catch (error) {

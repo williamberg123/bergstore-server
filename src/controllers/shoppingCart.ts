@@ -5,11 +5,19 @@ import * as Product from '../models/product';
 export const AddProductToShoppingCart = async (req: Request, res: Response) => {
 	try {
 		const { id: shoppingCartId } = req.params;
-		const { id: productId } = req.body;
+		const { product_id } = req.body;
 
-		const { products } = await ShoppingCart.findShoppingCart(shoppingCartId);
+		const shoppingCart = await ShoppingCart.findShoppingCart(shoppingCartId);
 
-		const isAlready = products.find(({ id }: { id: string }) => id === productId);
+		if (!shoppingCart) {
+			return res.status(400).send({
+				message: 'shopping cart not found',
+			});
+		}
+
+		const { products } = shoppingCart;
+
+		const isAlready = products.find((product: { product_id: string }) => product.product_id === product_id);
 
 		if (isAlready) {
 			return res.status(409).send({
@@ -28,6 +36,10 @@ export const AddProductToShoppingCart = async (req: Request, res: Response) => {
 		return res.status(200).send();
 	} catch (error) {
 		console.log(error);
+
+		return res.status(400).send({
+			message: 'unexpected error',
+		});
 	}
 };
 
@@ -35,24 +47,73 @@ export const ListShoppingCartProducts = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
 
-		const { products } = await ShoppingCart.findShoppingCart(id);
+		const shoppingCart = await ShoppingCart.findShoppingCart(id);
 
-		if (!products.length) {
-			return res.status(200).json({
-				products: [],
+		if (!shoppingCart) {
+			return res.status(400).send({
+				message: 'shopping cart not found',
 			});
 		}
 
+		const { products } = shoppingCart;
+
+		console.log('products', products);
+
 		let productsInfo = await Promise.all([
-			...products.map((product: { id: string }) => Product.findProductById(product.id)),
+			...products.map((product: { product_id: string }) => Product.findProductById(product?.product_id)),
 		]);
 
-		productsInfo = productsInfo.map((p, index) => ({ ...p._doc, count: products[index].count }));
+		productsInfo = productsInfo.map((p, index) => ({ ...p._doc, count: products[index]?.count }));
 
 		return res.status(200).json({
 			products: productsInfo,
 		});
 	} catch (error) {
 		console.log(error);
+
+		return res.status(400).send({
+			message: 'unexpected error',
+		});
+	}
+};
+
+export const ChangeAmountProduct = async (req: Request, res: Response) => {
+	try {
+		const { id: shoppingCartId } = req.params;
+		const { product_id, amount } = req.body;
+
+		const shoppingCart = await ShoppingCart.findShoppingCart(shoppingCartId);
+
+		if (!shoppingCart) {
+			return res.status(400).send({
+				message: 'shopping cart not found',
+			});
+		}
+
+		const { products } = shoppingCart;
+
+		const isAlready = products.find((product: { product_id: string }) => product.product_id === product_id);
+
+		if (!isAlready) {
+			return res.status(409).send({
+				message: 'product is not in this shopping cart',
+			});
+		}
+
+		if (isAlready.count + amount < 1) {
+			return res.status(400).send({
+				message: 'unexpected action',
+			});
+		}
+
+		const updatedShoppingCart = await ShoppingCart.updateShoppingCartProductAmount(shoppingCartId, req.body);
+
+		if (!updatedShoppingCart) return res.status(400).send({ message: 'cannot update product amount' });
+
+		return res.status(200).send();
+	} catch (error) {
+		return res.status(400).send({
+			message: 'unexpected error',
+		});
 	}
 };

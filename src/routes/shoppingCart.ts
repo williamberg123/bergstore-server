@@ -9,4 +9,6 @@ router.get('/:id/list', auth, ShoppingCartController.ListShoppingCartProducts);
 
 router.post('/:id/add_product', auth, ShoppingCartController.AddProductToShoppingCart);
 
+router.post('/:id/change_product_amount', auth, ShoppingCartController.ChangeAmountProduct);
+
 export default router;
