@@ -17,7 +17,7 @@ export const NewProduct = async (req: Request, res: Response) => {
 	}
 };
 
-export const GetProductInfo = async (req: Request, res: Response) => {
+export const FindProduct = async (req: Request, res: Response) => {
 	try {
 		const { id } = req.params;
 		const product = await Product.findProductById(id);
@@ -32,7 +32,7 @@ export const GetProductInfo = async (req: Request, res: Response) => {
 	}
 };
 
-export const GetAllProductsInfo = async (req: Request, res: Response) => {
+export const FindAllProducts = async (req: Request, res: Response) => {
 	try {
 		const products = await Product.findAll();
 
@@ -48,7 +48,7 @@ export const GetAllProductsInfo = async (req: Request, res: Response) => {
 	}
 };
 
-export const EditProductInfo = async (req: Request, res: Response) => {
+export const EditProduct = async (req: Request, res: Response) => {
 	try {
 		const { id: product_id } = req.params;
 		const updatedInfo = req.body;
@@ -56,6 +56,14 @@ export const EditProductInfo = async (req: Request, res: Response) => {
 		if (!product_id || !updatedInfo) {
 			return res.status(400).send({
 				message: 'missing data',
+			});
+		}
+
+		const product = await Product.findProductById(product_id);
+
+		if (!product) {
+			return res.status(400).send({
+				message: 'product not found',
 			});
 		}
 
@@ -79,7 +87,7 @@ export const DeleteProduct = async (req: Request, res: Response) => {
 
 		if (!deletedProduct) {
 			return res.status(400).send({
-				message: 'cannot delete product',
+				message: 'product not found',
 			});
 		}
 

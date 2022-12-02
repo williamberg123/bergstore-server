@@ -8,6 +8,7 @@ import dotenv from 'dotenv';
 import usersRouter from './routes/user';
 import shoppingCartsRouter from './routes/shoppingCart';
 import productsRouter from './routes/product';
+import avaliationsRouter from './routes/avaliation';
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use(cookieParser());
 app.use('/users', usersRouter);
 app.use('/shoppingcarts', shoppingCartsRouter);
 app.use('/products', productsRouter);
+app.use('/avaliations', avaliationsRouter);
 
 mongoose.connect(process.env.MONGODB_CONNECTION_STRING as string)
 	.then(() => {

@@ -9,6 +9,6 @@ router.post('/new', UserController.NewUser);
 
 router.post('/authenticate', UserController.Authenticate);
 
-router.post('/delete', auth, UserController.DeleteUser);
+router.delete('/:id', auth, UserController.DeleteUser);
 
 export default router;

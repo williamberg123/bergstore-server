@@ -6,14 +6,12 @@ const router = express.Router();
 
 router.post('/new', auth, ProductController.NewProduct);
 
-router.get('/list_all', auth, ProductController.GetAllProductsInfo);
+router.get('/list_all', auth, ProductController.FindAllProducts);
 
-router.get('/:id/find', auth, ProductController.GetProductInfo);
+router.get('/:id/find', auth, ProductController.FindProduct);
 
-router.post('/:id/edit', auth, ProductController.EditProductInfo);
+router.post('/:id/edit', auth, ProductController.EditProduct);
 
-router.post('/:id/delete', auth, ProductController.DeleteProduct);
-
-// falta testar as rotas de editar e deletar produto
+router.delete('/:id', auth, ProductController.DeleteProduct);
 
 export default router;

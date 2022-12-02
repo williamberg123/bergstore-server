@@ -40,7 +40,7 @@ export const NewUser = async (req: Request, res: Response) => {
 			});
 		}
 
-		const token = jwt.sign({ id: updatedUser._id }, process.env.SECRET, {
+		const token = jwt.sign({ id: updatedUser._id }, process.env.SECRET as string, {
 			expiresIn: 86400,
 		});
 
@@ -77,7 +77,7 @@ export const Authenticate = async (req: Request, res: Response) => {
 			});
 		}
 
-		const token = jwt.sign({ id: userResponse._id }, process.env.SECRET, {
+		const token = jwt.sign({ id: userResponse._id }, process.env.SECRET as string, {
 			expiresIn: 86400,
 		});
 
@@ -96,7 +96,7 @@ export const Authenticate = async (req: Request, res: Response) => {
 
 export const DeleteUser = async (req: Request, res: Response) => {
 	try {
-		const { id } = req.body;
+		const { id } = req.params;
 		const token = req.headers['x-acess-token'];
 
 		const jwtDecoded = jwt.decode(token as string, {
@@ -114,7 +114,7 @@ export const DeleteUser = async (req: Request, res: Response) => {
 
 		if (!deletedUser) return res.status(409).send({ message: 'user not found' });
 
-		const deletedShoppingCart = await ShoppingCart.deleteShoppingCart(deletedUser?.shopping_cart_id);
+		const deletedShoppingCart = await ShoppingCart.deleteShoppingCart(deletedUser?.shopping_cart_id as string);
 
 		if (deletedUser && deletedShoppingCart) {
 			return res.status(200).send();
