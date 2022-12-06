@@ -15,7 +15,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
 		json: true,
 	});
 
-	if (!isValid.id) {
+	if (!isValid?.payload?.id) {
 		return res.status(401).send({
 			message: 'token is invalid',
 		});
