@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/new', auth, ProductController.NewProduct);
 
-router.get('/list_all', auth, ProductController.FindAllProducts);
+router.get('/list_all/shoppingcart/:id', auth, ProductController.FindAllProducts);
 
 router.get('/:id/find', auth, ProductController.FindProduct);
 

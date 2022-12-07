@@ -1,4 +1,5 @@
 import mongoose, { Document } from 'mongoose';
+import { ProductType } from '../@types/product';
 import { ShoppingCartType } from '../@types/shoppingCart';
 
 const ShoppingCartSchema = new mongoose.Schema({
@@ -19,9 +20,9 @@ export const createShoppingCart = async (): Promise<Document | null | undefined>
 	}
 };
 
-export const findShoppingCart = async (id: string): Promise<Document<string, any, ShoppingCartType> | null | undefined> => {
+export const findShoppingCart = async (id: string) => {
 	try {
-		const response: Document<string, any, ShoppingCartType> | null = await ShoppingCartModel.findById(id);
+		const response = await ShoppingCartModel.findById(id);
 
 		return response;
 	} catch (error) {
@@ -77,6 +78,18 @@ export const updateShoppingCartProductAmount = async (
 				: product;
 		});
 
+		const updatedShoppingCart = await ShoppingCartModel.findByIdAndUpdate(shoppingCartId, {
+			products: updatedProducts,
+		});
+
+		return updatedShoppingCart;
+	} catch (error) {
+		console.log(error);
+	}
+};
+
+export const deleteProduct = async (shoppingCartId: string, updatedProducts: ProductType[]) => {
+	try {
 		const updatedShoppingCart = await ShoppingCartModel.findByIdAndUpdate(shoppingCartId, {
 			products: updatedProducts,
 		});

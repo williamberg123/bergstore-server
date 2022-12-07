@@ -57,8 +57,6 @@ export const ListShoppingCartProducts = async (req: Request, res: Response) => {
 
 		const { products } = shoppingCart;
 
-		console.log('products', products);
-
 		let productsInfo = await Promise.all([
 			...products.map((product: { product_id: string }) => Product.findProductById(product?.product_id)),
 		]);
@@ -115,5 +113,32 @@ export const ChangeAmountProduct = async (req: Request, res: Response) => {
 		return res.status(400).send({
 			message: 'unexpected error',
 		});
+	}
+};
+
+export const RemoveShoppingCartProduct = async (req: Request, res: Response) => {
+	try {
+		const { shopping_cart_id, product_id } = req.params;
+		const { products } = await ShoppingCart.findShoppingCart(shopping_cart_id);
+
+		if (!products.length) {
+			return res.status(400).send({
+				message: 'product not found in this shopping cart',
+			});
+		}
+
+		const updatedProducts = products.filter((p: { product_id: string }) => p.product_id !== product_id);
+		console.log('up', updatedProducts);
+
+		const updatedShoppingCart = await ShoppingCart.deleteProduct(shopping_cart_id, updatedProducts);
+
+		if (!updatedShoppingCart) {
+			return res.status(400).send();
+		}
+
+		return res.status(200).send();
+	} catch (error) {
+		console.log(error);
+		return res.status(400).send();
 	}
 };

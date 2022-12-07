@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import * as Product from '../models/product';
+import * as ShoppingCart from '../models/shoppingCart';
 
 export const NewProduct = async (req: Request, res: Response) => {
 	try {
@@ -34,7 +35,28 @@ export const FindProduct = async (req: Request, res: Response) => {
 
 export const FindAllProducts = async (req: Request, res: Response) => {
 	try {
-		const products = await Product.findAll();
+		const { id: shopping_cart_id } = req.params;
+
+		const [allProducts, shoppingCart] = await Promise.all([
+			Product.findAll(),
+			ShoppingCart.findShoppingCart(shopping_cart_id),
+		]);
+
+		const products = allProducts?.map((p) => {
+			const hasAdded = shoppingCart?.products?.find(({ product_id }) => product_id === String(p._id));
+
+			if (hasAdded) {
+				return {
+					...p._doc,
+					hasAlreadyAdded: true,
+				};
+			}
+
+			return {
+				...p._doc,
+				hasAlreadyAdded: false,
+			};
+		});
 
 		return res.status(200).json({
 			products,

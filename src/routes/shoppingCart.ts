@@ -11,4 +11,6 @@ router.post('/:id/add_product', auth, ShoppingCartController.AddProductToShoppin
 
 router.post('/:id/change_product_amount', auth, ShoppingCartController.ChangeAmountProduct);
 
+router.delete('/:shopping_cart_id/product/:product_id', auth, ShoppingCartController.RemoveShoppingCartProduct);
+
 export default router;
