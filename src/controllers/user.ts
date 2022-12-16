@@ -128,3 +128,30 @@ export const DeleteUser = async (req: Request, res: Response) => {
 		});
 	}
 };
+
+export const LogUserByToken = async (req: Request, res: Response) => {
+	try {
+		const savedToken = req.headers['x-acess-token'] as string;
+
+		const decoded = jwt.decode(savedToken, {
+			complete: true,
+			json: true,
+		});
+
+		const { id } = decoded?.payload as { id: string | null };
+
+		if (!id) return res.status(400).send();
+
+		const user = await User.findUserByKey('_id', id);
+
+		const newToken = jwt.sign({ id }, process.env.SECRET as string, {
+			expiresIn: 86400,
+		});
+
+		return res.json({
+			user, token: newToken,
+		});
+	} catch (error) {
+		console.log(error);
+	}
+};

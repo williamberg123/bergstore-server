@@ -5,6 +5,8 @@ import { auth } from '../middlewares/auth';
 
 const router = express.Router();
 
+router.get('/', auth, UserController.LogUserByToken);
+
 router.post('/new', UserController.NewUser);
 
 router.post('/authenticate', UserController.Authenticate);
